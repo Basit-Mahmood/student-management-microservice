@@ -1,0 +1,101 @@
+version: "3.8"
+
+services:
+  gateway-service:
+    build: 
+      context: ../../gateway-service # This must point to the folder with pom.xml
+      dockerfile: Dockerfile
+    container_name: gateway-service
+    ports:
+      - "${GATEWAY_PORT}:9000"
+      - "${GATEWAY_DEBUG_PORT}:${GATEWAY_DEBUG_PORT}"
+    depends_on:
+      student-service:
+        condition: service_healthy # This makes Gateway wait for Actuator to be UP
+      payment-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+    stop_grace_period: 40s # Must be > spring.lifecycle.timeout-per-shutdown-phase
+    environment:
+      - SPRING_PROFILES_ACTIVE=${APP_PROFILE}
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
+      - SERVICES_STUDENT=http://student-service:9001
+      - SERVICES_PAYMENT=http://payment-service:9002
+      - SERVICES_NOTIFICATION=http://notification-service:9003
+    networks:
+      - rak-bank-network
+
+  student-service:
+    build: 
+      context: ../../student-service # This must point to the folder with pom.xml
+      dockerfile: Dockerfile
+    container_name: student-service
+    ports:
+      - "${STUDENT_PORT}:9001"
+      - "${STUDENT_DEBUG_PORT}:${STUDENT_DEBUG_PORT}"
+      - "${STUDENT_H2_PORT}:8082"
+    stop_grace_period: 40s # Must be > spring.lifecycle.timeout-per-shutdown-phase
+    environment:
+      - SPRING_PROFILES_ACTIVE=${APP_PROFILE}
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8001
+    healthcheck:
+      # We use 'test' to check if the health endpoint returns 200 OK
+      test: ["CMD", "curl", "-f", "http://localhost:9001/student-service/actuator/health"]
+      interval: 10s    # How often to check
+      timeout: 5s      # How long to wait for a response
+      retries: 5       # How many times to retry before marking as 'unhealthy'
+      start_period: 30s # Give Spring Boot time to boot up before starting checks
+    networks:
+      - rak-bank-network
+
+  payment-service:
+    build: 
+      context: ../../payment-service # This must point to the folder with pom.xml
+      dockerfile: Dockerfile
+    container_name: payment-service
+    ports:
+      - "${PAYMENT_PORT}:9002"
+      - "${PAYMENT_DEBUG_PORT}:${PAYMENT_DEBUG_PORT}"
+    stop_grace_period: 40s # Must be > spring.lifecycle.timeout-per-shutdown-phase
+    environment:
+      - SPRING_PROFILES_ACTIVE=${APP_PROFILE}
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8002
+      # Make sure these match the FULL base-uri expected by your properties
+      - SERVICES_STUDENT=http://student-service:9001/student-service
+      - SERVICES_NOTIFICATION=http://notification-service:9003/notification-service
+    healthcheck:
+      # We use 'test' to check if the health endpoint returns 200 OK
+      test: ["CMD", "curl", "-f", "http://localhost:9002/payment-service/actuator/health"]
+      interval: 10s    # How often to check
+      timeout: 5s      # How long to wait for a response
+      retries: 5       # How many times to retry before marking as 'unhealthy'
+      start_period: 30s # Give Spring Boot time to boot up before starting checks
+    networks:
+      - rak-bank-network
+
+  notification-service:
+    build: 
+      context: ../../notification-service # This must point to the folder with pom.xml
+      dockerfile: Dockerfile
+    container_name: "notification-service"
+    ports:
+      - "${NOTIFICATION_PORT}:9003"
+      - "${NOTIFICATION_DEBUG_PORT}:${NOTIFICATION_DEBUG_PORT}"
+    stop_grace_period: 40s # Must be > spring.lifecycle.timeout-per-shutdown-phase
+    environment:
+      - SPRING_PROFILES_ACTIVE=${APP_PROFILE}
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8003
+    healthcheck:
+      # We use 'test' to check if the health endpoint returns 200 OK
+      test: ["CMD", "curl", "-f", "http://localhost:9003/notification-service/actuator/health"]
+      interval: 10s    # How often to check
+      timeout: 5s      # How long to wait for a response
+      retries: 5       # How many times to retry before marking as 'unhealthy'
+      start_period: 30s # Give Spring Boot time to boot up before starting checks
+    networks:
+      - rak-bank-network
+
+networks:
+  rak-bank-network:
+    driver: bridge

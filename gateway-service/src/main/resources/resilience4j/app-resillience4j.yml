@@ -1,0 +1,12 @@
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:                                      # Default configuration bean for all circuit breakers
+        slidingWindowSize: 20                       # The size of the sliding window used to record the outcome of calls when the circuit is closed
+        permittedNumberOfCallsInHalfOpenState: 5    # Number of permitted calls when the circuit is half-open
+        failureRateThreshold: 50                    # When the failure rate is above the threshold, the circuit becomes open.
+        waitDurationInOpenState: 15000              # 15 sec Waiting time before moving from open to half-open (ms)
+  timelimiter:
+    configs:
+      default:                                      # Default configuration bean for all time limiters
+        timeoutDuration: 5s                         # Configures a timeout (seconds)

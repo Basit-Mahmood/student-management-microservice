@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<body>
+	    <h2>Your Transaction is successful</h2>
+	    <p>Hi Dear <span th:text="${studentName}"></span></p>
+	    <p>Congratulations! Your payment transaction is successful with Skiply school of Excellence for <span th:text="${studentName}"></span> student of <span th:text="${grade}"></span></p>
+	    
+	    <h3>Transaction Details:</h3>
+	    <ul>
+	        <li>Date & Time: <span th:text="${#temporals.format(dateTime, 'dd MMMM yyyy, HH:mm')}"></span></li>
+	        <li>Reference No: <span th:text="${refNo}"></span></li>
+	        <li>Card No: <span th:text="${cardNo}"></span></li>
+	        <li>Card Type: <span th:text="${cardType}"></span></li>
+	    </ul>
+	
+	    <h3>Purchase Details:</h3>
+	    <p>Tuition Fees: AED <span th:text="${amount}"></span></p>
+	    <p><strong>Total: AED <span th:text="${amount}"></span></strong></p>
+	</body>
+</html>

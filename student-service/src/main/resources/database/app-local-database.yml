@@ -1,0 +1,36 @@
+app:
+  database:
+    student-service-flyway:
+      enabled: true
+      baseline-on-migrate: true
+      transaction-timeout: 30   # seconds
+
+spring:
+  # R2DBC for the Application
+  r2dbc:
+    url: r2dbc:h2:mem:///studentdb;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    username: sa
+    password: password
+    pool:
+      initial-size: 5
+      max-size: 10
+  # JPA for Flyway
+  jpa:
+      show-sql: true
+      properties:
+        hibernate:
+          format-sql: true        # to format SQL generated in a visually pleasing manner
+          generate_statistics: true
+  datasource:
+    student-service:
+      url: jdbc:h2:mem:studentdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_UPPER=FALSE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+      username: sa
+      password: password
+      hikari:
+        minimum-idle: 5
+        maximum-pool-size: 10
+        idle-timeout: 60000          # 1 min
+        max-lifetime: 1800000        # 30 min (recommended)
+        connection-timeout: 30000    # 30 sec
+        poolName: student-service-local-hikari-cp
+        leak-detection-threshold: 20000

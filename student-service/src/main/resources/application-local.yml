@@ -1,0 +1,11 @@
+logging.config: classpath:log4j2-spring-local.xml
+
+spring:
+  config:
+    import:
+      - ./actuator/app-local-actuator.yml
+      - ./database/app-local-database.yml
+      
+app:
+  info:
+    environment: ${spring.profiles.active}

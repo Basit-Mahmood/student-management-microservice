@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE xml>
+<Configuration xmlns:xi="http://www.w3.org/2001/XInclude" status="info">
+    <Properties>
+        <Property name="filename">./logs/${spring:spring.application.name}.log</Property>
+        <Property name="logPattern">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %X{id} %X{username:-anonymous} %-5level %c{36} - %msg%n</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${logPattern}"/>
+        </Console>
+
+        <RollingFile name="RollingFile" fileName="${filename}" 
+                     filePattern="${filename}-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${logPattern}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+            <DefaultRolloverStrategy min="1" max="4" />
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Root>
+
+        <Logger name="com.assessment.bank.rak.service.student" level="info" additivity="false">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Logger>
+
+        <Logger name="reactor.core" level="warn" />
+
+        <Logger name="org.springframework.r2dbc" level="debug" />
+        <Logger name="io.r2dbc.h2" level="trace" /> 
+
+        <Logger name="org.springframework.web.reactive" level="info" />
+        <Logger name="reactor.netty.http.server" level="info" />
+
+        <Logger name="org.springframework" level="info" />
+    </Loggers>
+</Configuration>

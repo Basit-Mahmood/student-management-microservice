@@ -1,0 +1,35 @@
+server:
+  port: 9000
+  netty:
+    connection-timeout: 2s
+  shutdown: graceful # Enables the graceful shutdown feature
+    # Netty uses an Event Loop model, so you don't typically 
+    # configure "min-spare" or "max" threads like Tomcat.
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    # 2. Config server settings
+    config:
+      server:
+        prefix: /gateway-service
+  lifecycle:
+    timeout-per-shutdown-phase: 30s # Max time to wait for requests to finish
+  profiles:
+    active: '@spring.profiles.active@'
+  threads:
+    virtual:
+      enabled: true
+  devtools:
+    livereload:
+      enabled: true
+  # 3. Imports
+  config:
+    import:
+      - ./actuator/app-actuator.yml
+      - ./gateway/app-gateway.yml
+      - ./i18n/i18n.yml
+      - ./jackson/app-jackson.yml
+      - ./resilience4j/app-resillience4j.yml
+      - ./spring-doc/app-spring-doc.yml

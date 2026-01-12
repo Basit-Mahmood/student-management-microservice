@@ -1,0 +1,26 @@
+resilience4j:
+  circuitbreaker:
+    instances:
+      notificationService:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        registerHealthIndicator: true
+  retry:
+    instances:
+      notificationService:
+        maxAttempts: 3
+        waitDuration: 2s
+        retryExceptions:
+          - org.springframework.web.reactive.function.client.WebClientResponseException
+      # NEW: Retry configuration for Student Service
+      studentService:
+        maxAttempts: 3           	 # Total 3 tries (Initial + 2 retries)
+        waitDuration: 500ms           # Wait 1s between retries
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2 # 500ms, then 1s, then 2s
+        retryExceptions:
+          - org.springframework.web.reactive.function.client.WebClientResponseException.ServiceUnavailable
+          - org.springframework.web.reactive.function.client.WebClientResponseException.GatewayTimeout
+          - java.io.IOException    # Handles network timeouts/flickers

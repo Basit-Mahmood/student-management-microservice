@@ -1,0 +1,5 @@
+springdoc:
+  openapi:
+    servers:
+      - url: http://localhost:9000/payment-service
+        description: Gateway Server

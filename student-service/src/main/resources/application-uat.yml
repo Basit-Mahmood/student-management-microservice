@@ -1,0 +1,14 @@
+logging.config: classpath:log4j2-spring-uat.xml
+
+spring:
+  devtools:
+    livereload:
+      enabled: false
+  config:
+    import:
+      - ./actuator/app-uat-actuator.yml
+      - ./database/app-uat-database.yml
+
+app:
+  info:
+    environment: ${spring.profiles.active}

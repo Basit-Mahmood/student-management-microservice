@@ -1,0 +1,33 @@
+app:
+  database:
+    student-service-flyway:
+      enabled: true
+      baseline-on-migrate: true
+      transaction-timeout: 30   # seconds
+    h2-console:
+      port: 8082  # You can change this to any available port
+
+spring:
+  datasource:
+    student-service:
+      driverClassName: org.h2.Driver
+  h2:
+    console:
+      enabled: false  # Disable the Servlet-based auto-config
+  jpa:
+    generate-ddl: false
+    #database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          time_zone: UTC
+          batch_size: 50
+          fetch_size: 200
+          batch_versioned_data: true
+ 

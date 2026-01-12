@@ -1,0 +1,14 @@
+logging.config: classpath:log4j2-spring-prod.xml
+
+spring:
+  devtools:
+    livereload:
+      enabled: false
+  config:
+    import:
+      - ./actuator/app-prod-actuator.yml
+      - ./api/app-prod-api.yml
+      
+app:
+  info:
+    environment: ${spring.profiles.active}

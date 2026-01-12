@@ -1,0 +1,27 @@
+#########################################################################################
+######################## Spring Boot Actuator Endpoint Properties #######################
+#########################################################################################
+      
+management:
+  info:
+    env:
+      enabled: true
+  endpoint:
+    shutdown:
+      enabled : true
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh,shutdown,prometheus,metrics
+  metrics:
+    tags:
+      application: ${spring.application.name}
+        
+info:
+  application:
+    name: ${spring.application.name}

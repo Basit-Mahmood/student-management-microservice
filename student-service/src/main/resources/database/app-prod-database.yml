@@ -1,0 +1,29 @@
+app:
+  database:
+    flyway:
+      student-service:
+        enabled: true
+        baseline-on-migrate: false
+        transaction-timeout: 30   # seconds
+
+spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format-sql: true        # to format SQL generated in a visually pleasing manner
+        generate_statistics: false
+  datasource:
+    student-service:
+      url: jdbc:h2:mem:testdb;;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+      username: sa
+      password: password
+      hikari:
+        minimum-idle: 10					# Set ⅓ of max-pool-size, Ensures warm/uprunning connections, Prevents latency spikes when load increases suddenly
+        maximum-pool-size: 30			# Recommended range: 20–50 depending on traffic, 30 is safe for mid-sized services
+        idle-timeout: 600000           	# 10 minutes, PostgreSQL kills connections after long idle times. Setting to 10 min allows Hikari to recycle old unused connections gracefully.
+        max-lifetime: 1700000          	# ~28 minutes (below PostgreSQL default)
+        connection-timeout: 30000      	# 30 seconds. Only increase if you expect heavy DB load.
+        poolName: student-service-prod-hikari-cp
+        leak-detection-threshold: 0    # disabled in production
+		

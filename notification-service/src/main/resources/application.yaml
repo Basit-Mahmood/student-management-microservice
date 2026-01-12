@@ -1,0 +1,31 @@
+server:
+  port: 9003
+  netty:
+    connection-timeout: 2s
+  shutdown: graceful # Enables the graceful shutdown feature
+    # Netty uses an Event Loop model, so you don't typically 
+    # configure "min-spare" or "max" threads like Tomcat.
+
+spring:
+  webflux:
+   base-path: /notification-service			 # This is the reactive equivalent of context-path. http://localhost:9003/notification-service/swagger-ui.html
+  application:
+    name: notification-service
+  lifecycle:
+    timeout-per-shutdown-phase: 30s # Max time to wait for requests to finish
+  profiles:
+    active: '@spring.profiles.active@'
+  threads:
+    virtual:
+      enabled: true
+  devtools:
+    livereload:
+      enabled: true
+  config:
+    import:
+      - ./actuator/app-actuator.yml
+      - ./i18n/i18n.yml
+      - ./jackson/app-jackson.yml
+      - ./mail/app-mail.yml
+      - ./spring-doc/app-spring-doc.yml
+

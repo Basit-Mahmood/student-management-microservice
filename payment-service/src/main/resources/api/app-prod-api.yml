@@ -1,0 +1,11 @@
+app:
+  api:
+    student-service:
+      base-uri: http://localhost:9001/student-service
+      endpoints:
+        get-student-by-id: /api/students/{studentId}
+
+    notification-service:
+      base-uri: http://localhost:9003/notification-service
+      endpoints:
+        email-fees-payment-receipt: /api/notifications/send-receipt

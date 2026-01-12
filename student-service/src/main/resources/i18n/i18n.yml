@@ -1,0 +1,7 @@
+###################################################################
+#################### Internationalization #########################
+####################################################################
+spring:
+  messages:
+    basename: i18n/errors,i18n/messages,i18n/titles,i18n/validation,org/springframework/security/messages
+    fallback-to-system-locale: true

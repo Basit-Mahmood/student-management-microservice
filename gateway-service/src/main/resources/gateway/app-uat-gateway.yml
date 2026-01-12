@@ -1,0 +1,55 @@
+spring:
+  cloud:
+    gateway:
+      httpclient:               # Configuration properties for the HTTP client
+        connect-timeout: 2000   # 2s  Time limit for a connection to be established (in ms)
+        response-timeout: 5s    # Time limit for a response to be received (Duration)
+        pool:
+          type: elastic         # Type of connection pool (elastic, fixed, or disabled)
+          max-idle-time: 15s    # Idle time after which the communication channel will be closed
+          max-life-time: 60s    # Time after which the communication channel will be closed
+      default-filters:                # A list of default filters
+        - SaveSession                 # Ensures the session data is saved before forwarding a request downstream
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter:
+              replenishRate: 10       # Number of tokens dripped in the bucket each second
+              burstCapacity: 20       # Allows request bursts of up to 20 requests
+              requestedTokens: 1      # How many tokens a request costs
+        - name: Retry                 # The name of the filter
+          args:
+            retries: 3                # Maximum of 3 retry attempts
+            methods: GET              # Retries only GET requests
+            series: SERVER_ERROR      # Retries only when 5XX errors
+            exceptions: java.io.IOException, java.util.concurrent.TimeoutException  # Retries only when the given exceptions are thrown
+            backoff:                  # Retries with a delay computed as “firstBackoff * (factor ^ n)”
+              firstBackoff: 50ms
+              maxBackOff: 500ms
+              factor: 2
+              basedOnPreviousValue: false
+      routes:                                   # A list of route definitions
+        - id: student-service                     # The route ID
+          uri: ${STUDENT_SERVICE_URL:http://student-service:9001} # The URI value comes from an environment variable, or else from the default.
+          predicates:
+            - Path=/api/students/**                     # The predicate is a path to match
+          filters:
+            - name: CircuitBreaker                      # Name of the filter
+              args:
+                name: studentServiceCircuitBreaker             # Name of the circuit breaker
+                fallbackUri: forward:/catalog-fallback  # Forwards request to this URI when the circuit is open
+        - id: payment-service
+          uri: ${PAYMENT_SERVICE_URL:http://payment-service:9002}
+          predicates:
+            - Path=/api/payments/**
+          filters:
+            - name: CircuitBreaker                    # No fallback defined for this circuit breaker.
+              args:
+                name: paymentServiceCircuitBreaker             # Multiplier to compute the next interval
+        - id: notification-service
+          uri: ${PAYMENT_SERVICE_URL:http://notification-service:9003}
+          predicates:
+            - Path=/api/notifications/**
+          filters:
+            - name: CircuitBreaker                    # No fallback defined for this circuit breaker.
+              args:
+                name: notificationServiceCircuitBreaker             # Multiplier to compute the next interval

@@ -1,0 +1,28 @@
+app:
+  database:
+    flyway:
+      student-service:
+        enabled: true
+        baseline-on-migrate: true
+        transaction-timeout: 30   # seconds
+
+spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format-sql: true        # to format SQL generated in a visually pleasing manner
+        generate_statistics: true
+  datasource:
+    student-service:
+      url: jdbc:h2:mem:testdb;;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+      username: sa
+      password: password
+      hikari:
+        minimum-idle: 10
+        maximum-pool-size: 30
+        idle-timeout: 600000           # 10 minutes
+        max-lifetime: 1700000          # ~28 minutes (below PostgreSQL default)
+        connection-timeout: 30000      # 30 seconds
+        poolName: student-service-uat-hikari-cp
+        leak-detection-threshold: 0    # disabled in production

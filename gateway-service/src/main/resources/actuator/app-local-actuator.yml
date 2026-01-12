@@ -1,0 +1,12 @@
+management:
+  endpoint:
+    gateway:
+      enabled: true    # Explicitly enable the gateway actuator
+    shutdown:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  health:
+    show-details: always

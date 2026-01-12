@@ -1,0 +1,14 @@
+springdoc:
+  swagger-ui:
+    # This enables the drop-down in Swagger UI to switch between services
+    urls:
+      - name: Student Service
+        url: /student-service/v3/api-docs
+      - name: Payment Service
+        url: /payment-service/v3/api-docs
+      - name: Notification Service
+        url: /notification-service/v3/api-docs
+  # Optional: Groups your Gateway's own internal endpoints (like Actuator)
+  group-configs:
+    - group: Gateway Internal
+      paths-to-match: /gateway-service/**
